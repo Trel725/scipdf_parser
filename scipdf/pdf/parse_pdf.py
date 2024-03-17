@@ -3,14 +3,9 @@ import os
 import os.path as op
 from glob import glob
 import urllib
-from typing import Dict 
 import subprocess
 import requests
-import fitz
-from PIL import Image
-import io
 from bs4 import BeautifulSoup, NavigableString
-from tqdm import tqdm, tqdm_notebook
 
 
 GROBID_URL = "http://localhost:8070"

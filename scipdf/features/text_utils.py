@@ -3,7 +3,6 @@ import pandas as pd
 import textstat
 import spacy
 from collections import Counter
-from itertools import groupby
 
 
 nlp = spacy.load("en_core_web_sm")
