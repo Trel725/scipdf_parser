@@ -1,5 +1,5 @@
-lxml
-spacy
+beautifulsoup4 
+numpy
 pandas
-textstat
-beautifulsoup4
+requests
+lxml

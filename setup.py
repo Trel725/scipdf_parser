@@ -15,7 +15,7 @@ if __name__ == "__main__":
         author='Titipat Achakulvisut',
         author_email='my.titipat@gmail.com',
         license='(c) MIT License 2019 Titipat Achakulvisut',
-        install_requires=['lxml', 'requests', 'spacy', 'pandas', 'textstat'],
+        install_requires=['lxml', 'requests', 'pandas', 'numpy', 'beautifulsoup4'],
         packages=find_packages(),
         keywords=[
             "PDF parser",

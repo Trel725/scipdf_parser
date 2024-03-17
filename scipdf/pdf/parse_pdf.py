@@ -28,7 +28,8 @@ def validate_url(path: str):
     """
     regex = re.compile(
         r"^(?:http|ftp)s?://"  # http:// or https://
-        r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|"  # domain...
+        # domain...
+        r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|"
         r"localhost|"  # localhost...
         r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"  # ...or ip
         r"(?::\d+)?"  # optional port
@@ -74,7 +75,7 @@ def parse_pdf(
         url = "%s/api/processFulltextDocument" % grobid_url
     else:
         url = "%s/api/processHeaderDocument" % grobid_url
-    
+
     files = []
     if return_coordinates:
         files += [
@@ -153,7 +154,8 @@ def parse_abstract(article):
     for p in list(div.children):
         if not isinstance(p, NavigableString) and len(list(p)) > 0:
             abstract += " ".join(
-                [elem.text for elem in p if not isinstance(elem, NavigableString)]
+                [elem.text for elem in p if not isinstance(
+                    elem, NavigableString)]
             )
     return abstract
 
@@ -162,9 +164,12 @@ def find_references(div):
     """
     For a given section, find references made in the section for publications, figures, tables
     """
-    publication_ref = [ref.attrs.get("target").strip("#") for ref in div.find_all("ref") if ref.attrs.get("type") == "bibr" and "target" in ref.attrs]
-    figure_ref = [ref.attrs.get("target").strip("#") for ref in div.find_all("ref") if ref.attrs.get("type") == "figure" and "target" in ref.attrs]
-    table_ref = [ref.attrs.get("target").strip("#") for ref in div.find_all("ref") if ref.attrs.get("type") == "table" and "target" in ref.attrs]
+    publication_ref = [ref.attrs.get("target").strip("#") for ref in div.find_all(
+        "ref") if ref.attrs.get("type") == "bibr" and "target" in ref.attrs]
+    figure_ref = [ref.attrs.get("target").strip("#") for ref in div.find_all(
+        "ref") if ref.attrs.get("type") == "figure" and "target" in ref.attrs]
+    table_ref = [ref.attrs.get("target").strip("#") for ref in div.find_all(
+        "ref") if ref.attrs.get("type") == "table" and "target" in ref.attrs]
     return {"publication_ref": publication_ref, "figure_ref": figure_ref, "table_ref": table_ref}
 
 
@@ -178,7 +183,8 @@ def parse_sections(article, as_list: bool = False):
         of joining it together as one single text
     """
     article_text = article.find("text")
-    divs = article_text.find_all("div", attrs={"xmlns": "http://www.tei-c.org/ns/1.0"})
+    divs = article_text.find_all(
+        "div", attrs={"xmlns": "http://www.tei-c.org/ns/1.0"})
     sections = []
     for div in divs:
         div_list = list(div.children)
@@ -230,7 +236,8 @@ def parse_references(article):
     """
     reference_list = []
     references = article.find("text").find("div", attrs={"type": "references"})
-    references = references.find_all("biblstruct") if references is not None else []
+    references = references.find_all(
+        "biblstruct") if references is not None else []
     reference_list = []
     for reference in references:
         ref_id = reference.get('xml:id', "")
@@ -259,7 +266,8 @@ def parse_references(article):
                 authors.append(firstname + " " + lastname)
         authors = "; ".join(authors)
         reference_list.append(
-            {"ref_id": ref_id, "title": title, "journal": journal, "year": year, "authors": authors}
+            {"ref_id": ref_id, "title": title, "journal": journal,
+                "year": year, "authors": authors}
         )
     return reference_list
 
@@ -303,7 +311,8 @@ def parse_formulas(article):
         formula_text = formula.text
         formula_coordinates = formula.attrs.get("coords") or ""
         if formula_coordinates != "":
-            formula_coordinates = [float(x) for x in formula_coordinates.split(",")]
+            formula_coordinates = [float(x)
+                                   for x in formula_coordinates.split(",")]
             formulas_list.append(
                 {
                     "formula_id": formula_id,
@@ -400,7 +409,8 @@ def parse_pdf_to_dict(
         return_coordinates=return_coordinates,
         grobid_url=grobid_url,
     )
-    article_dict = convert_article_soup_to_dict(parsed_article, as_list=as_list)
+    article_dict = convert_article_soup_to_dict(
+        parsed_article, as_list=as_list)
 
     return article_dict
 
