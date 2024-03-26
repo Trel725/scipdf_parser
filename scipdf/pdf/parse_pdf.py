@@ -86,6 +86,8 @@ def parse_pdf(
             ("teiCoordinates", (None, "biblStruct")),
         ]
 
+    req_kwargs = {"teiCoordinates": "p", "segmentSentences": "1"}
+
     if isinstance(pdf_path, str):
         if validate_url(pdf_path) and op.splitext(pdf_path)[-1].lower() != ".pdf":
             print("The input URL has to end with ``.pdf``")
@@ -93,18 +95,19 @@ def parse_pdf(
         elif validate_url(pdf_path) and op.splitext(pdf_path)[-1] == ".pdf":
             page = urllib.request.urlopen(pdf_path).read()
             files += [("input", page)]
-            parsed_article = requests.post(url, files=files).text
+            parsed_article = requests.post(
+                url, files=files, data=req_kwargs).text
         elif op.exists(pdf_path):
             files += [("input", (open(pdf_path, "rb")))]
             parsed_article = requests.post(
-                url, files=files
+                url, files=files, data=req_kwargs
             ).text
         else:
             parsed_article = None
     elif isinstance(pdf_path, bytes):
         # assume that incoming is byte string
         files += [("input", (pdf_path))]
-        parsed_article = requests.post(url, files=files).text
+        parsed_article = requests.post(url, files=files, data=req_kwargs).text
     else:
         parsed_article = None
 
