@@ -190,14 +190,14 @@ def parse_sections(article, as_list: bool = False):
         div_list = list(div.children)
         if len(div_list) == 0:
             heading = ""
-            text = ""
+            text = [dict(text="")]
         elif len(div_list) == 1:
             if isinstance(div_list[0], NavigableString):
                 heading = str(div_list[0])
-                text = ""
+                text = [dict(text="")]
             else:
                 heading = ""
-                text = div_list[0].text
+                text = [dict(text=div_list[0].text)]
         else:
             text = []
             heading = div_list[0]
@@ -210,11 +210,13 @@ def parse_sections(article, as_list: bool = False):
             for p in p_all:
                 if p is not None:
                     try:
-                        text.append(p.text)
+                        paragraph = dict(text=p.text)
+                        if p.attrs['coords']:
+                            paragraph['coords'] = [
+                                c.split(",") for c in p.attrs['coords'].split(";")]
+                        text.append(paragraph)
                     except:
                         pass
-            if not as_list:
-                text = "\n".join(text)
 
         if heading != "" or text != "":
             ref_dict = find_references(div)
