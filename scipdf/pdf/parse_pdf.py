@@ -112,7 +112,7 @@ def parse_pdf(
         parsed_article = None
 
     if soup and parsed_article is not None:
-        parsed_article = BeautifulSoup(parsed_article, "lxml")
+        parsed_article = BeautifulSoup(parsed_article, "xml")
 
     return parsed_article
 
@@ -121,7 +121,7 @@ def parse_authors(article):
     """
     Parse authors from a given BeautifulSoup of an article
     """
-    author_names = article.find("sourcedesc").findAll("persname")
+    author_names = article.find("sourcedesc").findAll("persname") if article.find("sourcedesc") is not None else []
     authors = []
     for author in author_names:
         firstname = author.find("forename", {"type": "first"})
@@ -143,7 +143,7 @@ def parse_date(article):
     Parse date from a given BeautifulSoup of an article
     """
     pub_date = article.find("publicationstmt")
-    year = pub_date.find("date")
+    year = pub_date.find("date") if pub_date is not None else None
     year = year.attrs.get("when") if year is not None else ""
     return year
 
@@ -153,6 +153,8 @@ def parse_abstract(article):
     Parse abstract from a given BeautifulSoup of an article
     """
     div = article.find("abstract")
+    if div is None:
+        return ""
     abstract = ""
     for p in list(div.children):
         if not isinstance(p, NavigableString) and len(list(p)) > 0:
@@ -214,7 +216,7 @@ def parse_sections(article, as_list: bool = False):
                 if p is not None:
                     try:
                         paragraph = dict(text=p.text)
-                        if p.attrs['coords']:
+                        if p.attrs.get('coords'):
                             paragraph['coords'] = [
                                 c.split(",") for c in p.attrs['coords'].split(";")]
                         text.append(paragraph)
@@ -288,7 +290,7 @@ def parse_figure_caption(article):
         figure_id = figure.attrs.get("xml:id") or ""
         label = figure.find("label").text
         if figure_type == "table":
-            caption = figure.find("figdesc").text
+            caption = figure.find("figdesc").text if figure.find("figdesc") is not None else ""
             data = figure.table.text
         else:
             caption = figure.text
